@@ -1,0 +1,93 @@
+﻿@model IEnumerable<storingVedios2.Models.Blob>
+@using Microsoft.AspNet.Identity;
+@using Microsoft.AspNet.Identity.Owin;
+@using storingVedios2.Models;
+@{
+    ViewBag.Title = "Index";
+}
+@*System.Web.HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>
+    ().FindById(System.Web.HttpContext.Current.User.Identity.GetUserId())*@
+@{
+    ApplicationUser user = new ApplicationUser() ;
+    if (Request.IsAuthenticated)
+    {
+        //the current user
+        user = System.Web.HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>
+    ().FindById(System.Web.HttpContext.Current.User.Identity.GetUserId());
+    } }
+
+    <h2>Computer Science Videos</h2>
+
+    @*<p>
+            @Html.ActionLink("Create New", "Create")
+        </p>*@
+    <div style="display:inline-block">
+        @using (Html.BeginForm("SearchSubjectName", "Blobs", FormMethod.Post))
+        {
+            <div>
+                <fieldset>
+                    <legend> Search Full </legend>
+                    <div> @Html.Label("Search")</div> <div> @Html.TextBox("Search", null, htmlAttributes: new { @class = "form-control" })<span>By:</span> </div> <br />
+
+                    <span><input type="submit" name="type" value="Doctor Name" class="btn btn-success " /></span> &nbsp;
+                    <span><input type="submit" name="type" value="Course Name" class="btn btn-success " /></span> &nbsp;
+                    <span><input type="submit" name="type" value="Video Name" class="btn btn-success" /></span> &nbsp;
+                    <span><input type="submit" name="type" value="File Name" class="btn btn-success" /></span> &nbsp;
+
+                </fieldset>
+                <br />
+            </div>
+        }
+    </div><br />
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+
+            <th>
+
+            </th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+        <tr>
+            @if (item.Path != null || item.Name != null)
+            {
+                <td>
+                    <h5> @Html.DisplayFor(modelItem => item.Name)</h5> <br />
+                    <video style="width:900px; height:300px;" controls>
+                        <source src="~/UpLoads/Videos/@item.Path" type="video/mp4" />
+                        <h1 class="glyphicon glyphicon-arrow-down"></h1>
+                    </video>
+                </td>
+            }
+            @if (item.FileName != null)
+            {
+                <td>
+                    <h3>PDF</h3>
+                    <h4> @item.FileName </h4>
+                    @Html.ActionLink("DownloadFile", "DownLoadFile", new { id = item.ID }, new { @class = "glyphicon glyphicon-arrow-down btn btn-success" })<br>
+                    <span class="text text-info" style="color:black;font-size:13px;">Extention as you wish</span>
+                </td>
+            }
+            @if (user.Roles.Where(r => r.RoleId == new ApplicationDbContext().Roles.Where(rr => rr.Name == "Admin").First().Id).ToList().Count > 0)
+             {
+
+                <td>
+                    @* the Project not complete yet so you need to  use this page for delete video for now*@
+                    @*@Html.ActionLink("Edit", "Edit", new { id = item.ID }) |*@
+                    @*@Html.ActionLink("Create New", "Create", new { id = item.ID }) |*@
+                    @*@Html.ActionLink("Details", "Details", new { id = item.ID }) |*@
+                    @Html.ActionLink("Delete", "Delete", new { id = item.ID  },new { @class="btn btn-danger"})
+                </td>
+
+        }
+
+
+        </tr>
+
+        }
+
+    </table>
