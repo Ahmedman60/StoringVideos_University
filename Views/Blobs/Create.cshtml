@@ -1,0 +1,130 @@
+﻿
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Create</h2>
+
+
+@using (Html.BeginForm("Create", "Blobs", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+<div class="form-group">
+
+    <h4>Upload Videos Here</h4>
+    <div><label for="CourseID">Doctor Name</label></div>
+    <div>@Html.DropDownList("DoctorID", ViewBag.DoctorID as SelectList, "Select-Doctor", new { @class = "form-control", @Required = true })</div>
+    <div><label for="DoctorID">Course Name</label></div>
+    <div>@Html.DropDownList("CourseID", new SelectList(""), "Select-Course", new { @class = "form-control"  , @Required = true })</div><br />
+    <div><label for="DoctorID">Select Video Here</label></div>
+    @* Here FilePath to Check The file is Video here  it client side here*@
+    @Html.TextBox("VideoPath", "", new { type = "file", id = "FilePath" })<br />
+    @* here you need to test server side for the file*@
+    <div><label for="FilePath">Select File Here</label></div>
+
+    @Html.TextBox("FilePath", "", new { type = "file", })<br />
+    @*<input name="FilePath" type="file" id="FilePath" />*@
+
+    <video id="ShowImage" />
+
+    <br /><br />
+
+
+</div>
+    <input type="submit" value="UpLoad File" onclick="" class="btn btn-success" />
+
+}
+<p id="Error"></p>
+
+<div id="WorkersDiv">
+
+
+</div>
+<h3 style="color:red">@ViewData["Message"]</h3>
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section styles{
+    <style>
+        #ShowImage {
+            display: none;
+            height: 200px;
+            border: 1px solid #000;
+            margin: 10px 5px 0 0;
+            float: left;
+        }
+
+        #Error {
+            color: red;
+        }
+    </style>
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        //geting the courses of the doctor
+        $(document).ready(function () {
+
+
+
+            $("#DoctorID").change(function () {
+                $("#CourseID").empty();
+
+                $.get("/Blobs/GetCourses", { DoctorID: $("#DoctorID").val() }, function (data) {
+                    var s = "<option value=''> --Select Course-- </option>"
+                         
+                    $.each(data, function (index, row) {
+
+
+                        s += "<option value='" + row.CourseID + "'>" + row.CourseName + "</option>";
+
+                    });
+                    $("#CourseID").html(s);
+
+
+                });
+
+
+
+
+
+            });
+        });
+            
+        
+
+    </script>
+
+
+    <script>
+
+        document.getElementById('FilePath').addEventListener('change', putImage, false);
+        function showImage(src, target) {
+            var fr = new FileReader();
+            fr.onload = function () {
+                target.src = fr.result; //<img src="H://file1.jpg" />
+            }
+            fr.readAsDataURL(src.files[0]);
+        }
+        function putImage() {
+            if (!document.getElementById("FilePath").files[0].type.match('video.*')) {
+                document.getElementById("ShowImage").style["display"] = "none";
+                document.getElementById("Error").innerHTML = "Please Select video File Only (Recommended Mp4) Size LowerThan 100mb";
+                document.getElementById("FilePath").value = "";
+            }
+            else {
+                document.getElementById("Error").innerHTML = "";
+                var src = document.getElementById("FilePath");
+                var target = document.getElementById("ShowImage");
+                target.style["display"] = "block";
+                showImage(src, target);
+            }
+        }
+
+    </script>
+}

@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="VideoCollageModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="Blobs">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Path" Type="nvarchar(max)" />
+    <Property Name="Name" Type="nvarchar(max)" />
+    <Property Name="CourseID" Type="int" Nullable="false" />
+    <Property Name="FilePath" Type="varbinary(max)" />
+    <Property Name="FileName" Type="nvarchar" MaxLength="100" />
+  </EntityType>
+  <EntityType Name="Courses">
+    <Key>
+      <PropertyRef Name="CourseID" />
+    </Key>
+    <Property Name="CourseID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="CourseName" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="DoctorId" Type="int" />
+  </EntityType>
+  <EntityType Name="Doctors">
+    <Key>
+      <PropertyRef Name="DoctorID" />
+    </Key>
+    <Property Name="DoctorID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="DoctorName" Type="nvarchar" MaxLength="200" Nullable="false" />
+  </EntityType>
+  <Association Name="FK_Blobs_Courses">
+    <End Role="Courses" Type="Self.Courses" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Blobs" Type="Self.Blobs" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Courses">
+        <PropertyRef Name="CourseID" />
+      </Principal>
+      <Dependent Role="Blobs">
+        <PropertyRef Name="CourseID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Courses_Doctors">
+    <End Role="Doctors" Type="Self.Doctors" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Courses" Type="Self.Courses" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Doctors">
+        <PropertyRef Name="DoctorID" />
+      </Principal>
+      <Dependent Role="Courses">
+        <PropertyRef Name="DoctorId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="VideoCollageModelStoreContainer">
+    <EntitySet Name="Blobs" EntityType="Self.Blobs" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Courses" EntityType="Self.Courses" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Doctors" EntityType="Self.Doctors" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_Blobs_Courses" Association="Self.FK_Blobs_Courses">
+      <End Role="Courses" EntitySet="Courses" />
+      <End Role="Blobs" EntitySet="Blobs" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Courses_Doctors" Association="Self.FK_Courses_Doctors">
+      <End Role="Doctors" EntitySet="Doctors" />
+      <End Role="Courses" EntitySet="Courses" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
